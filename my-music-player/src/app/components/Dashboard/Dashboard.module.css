@@ -1,0 +1,74 @@
+.dashboard {
+    padding: 16px;
+    text-align: center;
+    background-color: #fff;
+    max-width: 480px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    border-bottom: 1px solid rgba(189, 181, 181, 0.5);
+}
+
+.dashboard h4 {
+    font-size: 1.4rem;
+    color: var(--primary-color);
+}
+
+.dashboard h2 {
+    font-size: 2rem;
+    color: var(--text-color);
+}
+
+.cd {
+    display: flex;
+    width: 200px;
+    margin: 20px auto 0;
+}
+
+.cd-thumbnail {
+    background-size: cover;
+    margin: auto;
+    border-radius: 50%;
+    padding-top: 100%;
+    width: 100%;
+}
+
+.control {
+    padding: 40px 20px 10px;
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.btn {
+    font-size: 2rem;
+    color: var(--btn-color);
+    width: var(--btn-size);
+    height: var(--btn-size);
+    text-align: center;
+    line-height: var(--btn-size);
+    border: none;
+}
+
+.btn:hover {
+    background-color: rgba(153, 153, 153, 0.4);
+}
+
+.btn[title="Play"], 
+.btn[title="Pause"] {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 50%;
+}
+
+.active:not(.btn[title="Play"]) {
+    color: var(--primary-color);
+}
+
+.progress-bar {
+    margin-top: 30px;
+    width: 100%;
+    accent-color: var(--primary-color);
+}

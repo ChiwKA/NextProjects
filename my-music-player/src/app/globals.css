@@ -1,0 +1,27 @@
+:root {
+  --primary-color: #953e8f;
+  --text-color: #4a4a4a;
+  --btn-color: #999999;
+  --btn-size: 40px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
