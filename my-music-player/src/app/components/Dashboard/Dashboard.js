@@ -13,33 +13,56 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Dashboard.module.css";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 
 export default function Dashboard({ songs }) {
   const [songId, setSongId] = useState(0);
+  const [progress, setProgress] = useState(0)
   const [isRepeated, setIsRepeated] = useState(false);
   const [isPlayed, setIsPlayed] = useState(false)
   const [isShuffled, setIsShuffle] = useState(false)
 
-  useEffect(() => {
-    
-  }, isPlayed)
+  const audioRef = useRef(null)
+  const intervalRef = useRef(null)
 
   const handleRepeat = function () {
     setIsRepeated(!isRepeated);
   };
-  const handleSongBackward = function () {
+  const handlePreviousSong = function () {
     if (songId === 0) {
       setSongId(songs.length - 1);
     } else {
       setSongId(songId - 1);
     }
   };
+  const handleNextSong = function() {
+    if (songId === songs.length - 1) {
+      setSongId(0)
+    } else {
+      setSongId(songId + 1)
+    }
+  }
   const handleSongToggle = () => {
-    setIsPlayed(!isPlayed)
+    const nextIsPlaying = !isPlayed
+    setIsPlayed(nextIsPlaying)
+    if (nextIsPlaying) {
+      audioRef.current.play()
+      intervalRef.current = setInterval(() => {
+        setProgress(getPercentageProgressBar())
+      }, 1000);
+    } else {
+      audioRef.current.pause()
+      clearInterval(intervalRef.current)
+    }
   }
   const handleSongShuffle = () => {
     setIsShuffle(!isShuffled)
+  }
+
+  const getPercentageProgressBar = () => {
+    let percent = audioRef.current.currentTime * 100 / audioRef.current.duration
+    console.log(percent)
+    return percent.toFixed()
   }
 
   return (
@@ -68,7 +91,7 @@ export default function Dashboard({ songs }) {
           </button>
           <button
             className={clsx(styles.btn)}
-            onClick={handleSongBackward}
+            onClick={handlePreviousSong}
             type="button"
             title="Back"
           >
@@ -90,7 +113,7 @@ export default function Dashboard({ songs }) {
           <button type="button" className={styles.btn} title="Turn up volume">
             <FontAwesomeIcon icon={faVolumeHigh} />
           </button>
-          <button type="button" className={styles.btn} title="Next">
+          <button type="button" className={styles.btn} title="Next" onClick={handleNextSong}>
             <FontAwesomeIcon icon={faForwardStep} />
           </button>
           <button type="button" className={clsx(styles.btn, { [styles.active]: isShuffled })} title="Shuffle playlist" onClick={handleSongShuffle}>
@@ -100,12 +123,9 @@ export default function Dashboard({ songs }) {
         <input
           type="range"
           className={styles["progress-bar"]}
-          min="0"
-          max="100"
-          value="0"
-          step="1"
+          value={progress}
         />
-        <audio src="/songs/01. The Trail.mp3"></audio>
+        <audio ref={audioRef} src={songs[songId].path}></audio>
       </div>
     </div>
   );
