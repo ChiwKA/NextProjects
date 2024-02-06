@@ -13,18 +13,48 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Dashboard.module.css";
 import clsx from "clsx";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import anime from "animejs";
 
 export default function Dashboard({ songs }) {
   const [songId, setSongId] = useState(0);
   const [progress, setProgress] = useState(0)
   const [isRepeated, setIsRepeated] = useState(false);
-  const [isPlayed, setIsPlayed] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
   const [isShuffled, setIsShuffle] = useState(false)
 
   const audioRef = useRef(null)
   const intervalRef = useRef(null)
+  const cdRef = useRef(null)
 
+  useEffect(() => {
+    audioRef.current.addEventListener('ended', handleAudioEnded) 
+  }, [])
+
+  useEffect(() => {
+    const cdAnimation = anime({
+      targets: cdRef.current,
+      rotate: '+=1turn',
+      duration: 10000,
+      loop: true,
+      easing: 'linear'
+    })
+    cdAnimation.pause()
+    if (isPlaying) {
+      cdAnimation.play()
+      console.log('play')
+    }
+    return () => {
+      cdAnimation.pause()
+      console.log('pause')
+    }
+  }, [isPlaying])
+
+  const handleAudioEnded = () => {
+    setIsPlaying(false)
+    setProgress(0)
+    clearInterval(intervalRef.current)
+  }
   const handleRepeat = function () {
     setIsRepeated(!isRepeated);
   };
@@ -43,8 +73,8 @@ export default function Dashboard({ songs }) {
     }
   }
   const handleSongToggle = () => {
-    const nextIsPlaying = !isPlayed
-    setIsPlayed(nextIsPlaying)
+    const nextIsPlaying = !isPlaying
+    setIsPlaying(nextIsPlaying)
     if (nextIsPlaying) {
       audioRef.current.play()
       intervalRef.current = setInterval(() => {
@@ -58,10 +88,13 @@ export default function Dashboard({ songs }) {
   const handleSongShuffle = () => {
     setIsShuffle(!isShuffled)
   }
+  const handleProgressChange = (e) => {
+    setProgress(e.target.value)
+    audioRef.current.currentTime = e.target.value * audioRef.current.duration / 100
+  }
 
   const getPercentageProgressBar = () => {
     let percent = audioRef.current.currentTime * 100 / audioRef.current.duration
-    console.log(percent)
     return percent.toFixed()
   }
 
@@ -71,7 +104,7 @@ export default function Dashboard({ songs }) {
         <h4>Now playing:</h4>
         <h2>{songs[songId].title}</h2>
       </header>
-      <div className={styles.cd}>
+      <div className={styles.cd} ref={cdRef}>
         <div
           className={styles["cd-thumbnail"]}
           style={{
@@ -104,10 +137,10 @@ export default function Dashboard({ songs }) {
           >
             <FontAwesomeIcon icon={faVolumeLow} />
           </button>
-          {!isPlayed && <button type="button" className={styles.btn} title="Play" onClick={handleSongToggle}>
+          {!isPlaying && <button type="button" className={styles.btn} title="Play" onClick={handleSongToggle}>
             <FontAwesomeIcon icon={faPlay} />
           </button>}
-          {isPlayed && <button type="button" className={styles.btn} title="Pause" onClick={handleSongToggle}>
+          {isPlaying && <button type="button" className={styles.btn} title="Pause" onClick={handleSongToggle}>
             <FontAwesomeIcon icon={faPause} />
           </button>}
           <button type="button" className={styles.btn} title="Turn up volume">
@@ -124,6 +157,7 @@ export default function Dashboard({ songs }) {
           type="range"
           className={styles["progress-bar"]}
           value={progress}
+          onInput={handleProgressChange}
         />
         <audio ref={audioRef} src={songs[songId].path}></audio>
       </div>
