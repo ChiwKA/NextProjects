@@ -15,9 +15,9 @@ import styles from "./Dashboard.module.css";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import anime from "animejs";
+import songs from "@/app/song-data";
 
-export default function Dashboard({ songs }) {
-  const [songId, setSongId] = useState(0);
+export default function Dashboard({ songId, onPreviousSong, onNextSong }) {
   const [progress, setProgress] = useState(0)
   const [isRepeated, setIsRepeated] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false)
@@ -42,11 +42,9 @@ export default function Dashboard({ songs }) {
     cdAnimation.pause()
     if (isPlaying) {
       cdAnimation.play()
-      console.log('play')
     }
     return () => {
       cdAnimation.pause()
-      console.log('pause')
     }
   }, [isPlaying])
 
@@ -58,20 +56,6 @@ export default function Dashboard({ songs }) {
   const handleRepeat = function () {
     setIsRepeated(!isRepeated);
   };
-  const handlePreviousSong = function () {
-    if (songId === 0) {
-      setSongId(songs.length - 1);
-    } else {
-      setSongId(songId - 1);
-    }
-  };
-  const handleNextSong = function() {
-    if (songId === songs.length - 1) {
-      setSongId(0)
-    } else {
-      setSongId(songId + 1)
-    }
-  }
   const handleSongToggle = () => {
     const nextIsPlaying = !isPlaying
     setIsPlaying(nextIsPlaying)
@@ -124,7 +108,7 @@ export default function Dashboard({ songs }) {
           </button>
           <button
             className={clsx(styles.btn)}
-            onClick={handlePreviousSong}
+            onClick={onPreviousSong}
             type="button"
             title="Back"
           >
@@ -146,7 +130,7 @@ export default function Dashboard({ songs }) {
           <button type="button" className={styles.btn} title="Turn up volume">
             <FontAwesomeIcon icon={faVolumeHigh} />
           </button>
-          <button type="button" className={styles.btn} title="Next" onClick={handleNextSong}>
+          <button type="button" className={styles.btn} title="Next" onClick={onNextSong}>
             <FontAwesomeIcon icon={faForwardStep} />
           </button>
           <button type="button" className={clsx(styles.btn, { [styles.active]: isShuffled })} title="Shuffle playlist" onClick={handleSongShuffle}>

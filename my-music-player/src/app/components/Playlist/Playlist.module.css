@@ -13,6 +13,24 @@
     border-radius: 8px;
 }
 
+.song.active {
+    background-color: var(--primary-color);
+}
+
+.song:active {
+    background-color: var(--primary-color);
+    opacity: 0.6;
+}
+
+.song:active .song__name,
+.song:active .song__singer,
+.song:active .option,
+.song.active .song__name,
+.song.active .song__singer,
+.song.active .option {
+    color: #fff;
+}
+
 .song__thumbnail {
     background-size: cover;
     border-radius: 50%;
