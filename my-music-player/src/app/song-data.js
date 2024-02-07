@@ -47,6 +47,27 @@ const songs = [
         artist: 'Trio Los Panchos',
         image: 'url(https://cdnassets.hw.net/07/49/065382cb4a0e903698858cc283df/besamemucho-hero.jpg)',
         path: '/songs/BesameMucho-TrioLosPanchos_uc2m.mp3'
+    },
+    {
+        id: 7,
+        title: 'Besame Mucho',
+        artist: 'Trio Los Panchos',
+        image: 'url(https://cdnassets.hw.net/07/49/065382cb4a0e903698858cc283df/besamemucho-hero.jpg)',
+        path: '/songs/BesameMucho-TrioLosPanchos_uc2m.mp3'
+    },
+    {
+        id: 8,
+        title: 'Besame Mucho',
+        artist: 'Trio Los Panchos',
+        image: 'url(https://cdnassets.hw.net/07/49/065382cb4a0e903698858cc283df/besamemucho-hero.jpg)',
+        path: '/songs/BesameMucho-TrioLosPanchos_uc2m.mp3'
+    },
+    {
+        id: 9,
+        title: 'Besame Mucho',
+        artist: 'Trio Los Panchos',
+        image: 'url(https://cdnassets.hw.net/07/49/065382cb4a0e903698858cc283df/besamemucho-hero.jpg)',
+        path: '/songs/BesameMucho-TrioLosPanchos_uc2m.mp3'
     }
 ]
 

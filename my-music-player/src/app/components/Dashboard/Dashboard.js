@@ -22,36 +22,46 @@ export default function Dashboard({ songId, onPreviousSong, onNextSong }) {
   const [isRepeated, setIsRepeated] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false)
   const [isShuffled, setIsShuffle] = useState(false)
+  const [cdWidth, setCdWidth] = useState(200)
+  const [cdOpacity, setCdOpacity] = useState(1)
 
   const audioRef = useRef(null)
   const intervalRef = useRef(null)
   const cdRef = useRef(null)
+  const animationRef = useRef(null)
 
   useEffect(() => {
-    audioRef.current.addEventListener('ended', handleAudioEnded) 
-  }, [])
-
-  useEffect(() => {
-    const cdAnimation = anime({
+    audioRef.current.addEventListener('ended', handleAudioEnded)
+    window.addEventListener('scroll', handleCdScroll)
+    animationRef.current = anime({
       targets: cdRef.current,
       rotate: '+=1turn',
       duration: 10000,
       loop: true,
       easing: 'linear'
     })
-    cdAnimation.pause()
+    animationRef.current.pause()
+  }, [])
+  
+  useEffect(() => {
     if (isPlaying) {
-      cdAnimation.play()
+      animationRef.current.play()
     }
     return () => {
-      cdAnimation.pause()
+      animationRef.current.pause()
     }
   }, [isPlaying])
 
+  const handleCdScroll = () => {
+    const scrollTop = window.scrollY 
+    setCdWidth(scrollTop < 200 ? 200 - scrollTop : 0)
+    setCdOpacity(parseInt(cdRef.current.style.width) / 200)
+  }
   const handleAudioEnded = () => {
     setIsPlaying(false)
     setProgress(0)
     clearInterval(intervalRef.current)
+    animationRef.current.restart()
   }
   const handleRepeat = function () {
     setIsRepeated(!isRepeated);
@@ -88,7 +98,7 @@ export default function Dashboard({ songId, onPreviousSong, onNextSong }) {
         <h4>Now playing:</h4>
         <h2>{songs[songId].title}</h2>
       </header>
-      <div className={styles.cd} ref={cdRef}>
+      <div className={styles.cd} ref={cdRef} style={{ width: `${cdWidth}px`, opacity: cdOpacity }}>
         <div
           className={styles["cd-thumbnail"]}
           style={{
