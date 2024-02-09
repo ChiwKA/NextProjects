@@ -10,6 +10,7 @@ import {
   faVolumeHigh,
   faForwardStep,
   faShuffle,
+  faHandPointRight,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Dashboard.module.css";
 import clsx from "clsx";
@@ -17,21 +18,19 @@ import { useEffect, useRef, useState } from "react";
 import anime from "animejs";
 import songs from "@/app/song-data";
 
-export default function Dashboard({ songId, onPreviousSong, onNextSong }) {
+export default function Dashboard({ songId, onPreviousSong, onNextSong, isShuffled, handleSongShuffle }) {
   const [progress, setProgress] = useState(0)
   const [isRepeated, setIsRepeated] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false)
-  const [isShuffled, setIsShuffle] = useState(false)
   const [cdWidth, setCdWidth] = useState(200)
   const [cdOpacity, setCdOpacity] = useState(1)
 
   const audioRef = useRef(null)
-  const intervalRef = useRef(null)
   const cdRef = useRef(null)
   const animationRef = useRef(null)
+  const volumeRef = useRef(1)
 
   useEffect(() => {
-    audioRef.current.addEventListener('ended', handleAudioEnded)
     window.addEventListener('scroll', handleCdScroll)
     animationRef.current = anime({
       targets: cdRef.current,
@@ -58,10 +57,14 @@ export default function Dashboard({ songId, onPreviousSong, onNextSong }) {
     setCdOpacity(parseInt(cdRef.current.style.width) / 200)
   }
   const handleAudioEnded = () => {
-    setIsPlaying(false)
-    setProgress(0)
-    clearInterval(intervalRef.current)
-    animationRef.current.restart()
+    if (isRepeated) {
+      setProgress(0)
+      audioRef.current.play()
+    } else {
+      setIsPlaying(false)
+      setProgress(0)
+      animationRef.current.restart()
+    }
   }
   const handleRepeat = function () {
     setIsRepeated(!isRepeated);
@@ -71,20 +74,21 @@ export default function Dashboard({ songId, onPreviousSong, onNextSong }) {
     setIsPlaying(nextIsPlaying)
     if (nextIsPlaying) {
       audioRef.current.play()
-      intervalRef.current = setInterval(() => {
-        setProgress(getPercentageProgressBar())
-      }, 1000);
     } else {
       audioRef.current.pause()
-      clearInterval(intervalRef.current)
     }
-  }
-  const handleSongShuffle = () => {
-    setIsShuffle(!isShuffled)
   }
   const handleProgressChange = (e) => {
     setProgress(e.target.value)
     audioRef.current.currentTime = e.target.value * audioRef.current.duration / 100
+  }
+  const handleVolumeUp = () => {
+    volumeRef.current += 0.1
+    audioRef.current.volume = volumeRef.current
+  }
+  const handleVolumeDown = () => {
+    volumeRef.current -= 0.1
+    audioRef.current.volume = volumeRef.current
   }
 
   const getPercentageProgressBar = () => {
@@ -128,6 +132,7 @@ export default function Dashboard({ songId, onPreviousSong, onNextSong }) {
             type="button"
             className={clsx(styles.btn)}
             title="Turn down volume"
+            onClick={handleVolumeDown}
           >
             <FontAwesomeIcon icon={faVolumeLow} />
           </button>
@@ -137,7 +142,7 @@ export default function Dashboard({ songId, onPreviousSong, onNextSong }) {
           {isPlaying && <button type="button" className={styles.btn} title="Pause" onClick={handleSongToggle}>
             <FontAwesomeIcon icon={faPause} />
           </button>}
-          <button type="button" className={styles.btn} title="Turn up volume">
+          <button type="button" className={styles.btn} title="Turn up volume" onClick={handleVolumeUp}>
             <FontAwesomeIcon icon={faVolumeHigh} />
           </button>
           <button type="button" className={styles.btn} title="Next" onClick={onNextSong}>
@@ -153,7 +158,7 @@ export default function Dashboard({ songId, onPreviousSong, onNextSong }) {
           value={progress}
           onInput={handleProgressChange}
         />
-        <audio ref={audioRef} src={songs[songId].path}></audio>
+        <audio ref={audioRef} src={songs[songId].path} onEnded={handleAudioEnded} onTimeUpdate={() => {setProgress(getPercentageProgressBar())}}></audio>
       </div>
     </div>
   );

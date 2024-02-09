@@ -3,24 +3,67 @@
 import Dashboard from './components/Dashboard/Dashboard';
 import Playlist from './components/Playlist/Playlist';
 import songs from './song-data';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Home() {
   const [songId, setSongId] = useState(0);
+  const [isShuffled, setIsShuffle] = useState(false)
+  
+  const songActiveRef = useRef(null)
+  const randomRef = useRef([])
+
+  useEffect(() => {
+    setTimeout(() => {
+      songActiveRef.current.scrollIntoView({
+        behavior:'smooth',
+        block:'center',
+        inline:'center'
+      })
+    }, 1000)
+  }, [songId])
 
   const handlePreviousSong = function () {
-    if (songId === 0) {
-      setSongId(songs.length - 1);
+    if (isShuffled) {
+      if (randomRef.current.length === songs.length) {
+        randomRef.current = []
+      } else {
+        let randomIndex
+        do {
+          randomIndex = Math.floor(Math.random() * songs.length)
+        } while (randomIndex === songId || randomRef.current.includes(randomIndex))
+        randomRef.current.push(randomIndex)
+        setSongId(randomIndex)
+      }
     } else {
-      setSongId(songId - 1);
+      if (songId === 0) {
+        setSongId(songs.length - 1);
+      } else {
+        setSongId(songId - 1);
+      }
     }
   };
   const handleNextSong = function() {
-    if (songId === songs.length - 1) {
-      setSongId(0)
+    if (isShuffled) {
+      if (randomRef.current.length === songs.length) {
+        randomRef.current = []
+      } else {
+        let randomIndex
+        do {
+          randomIndex = Math.floor(Math.random() * songs.length)
+        } while (randomIndex === songId || randomRef.current.includes(randomIndex))
+        randomRef.current.push(randomIndex)
+        setSongId(randomIndex)
+      }
     } else {
-      setSongId(songId + 1)
+      if (songId === songs.length - 1) {
+        setSongId(0)
+      } else {
+        setSongId(songId + 1)
+      }
     }
+  }
+  const handleSongShuffle = () => {
+    setIsShuffle(!isShuffled)
   }
 
   const selectSong = (id) => {
@@ -29,8 +72,8 @@ export default function Home() {
 
   return (
    <main>
-      <Dashboard songId={songId} onPreviousSong={handlePreviousSong} onNextSong={handleNextSong} />
-      <Playlist songId={songId} selectSong={selectSong} />
+      <Dashboard songId={songId} onPreviousSong={handlePreviousSong} onNextSong={handleNextSong} isShuffled={isShuffled} handleSongShuffle={handleSongShuffle} />
+      <Playlist songId={songId} selectSong={selectSong} ref={songActiveRef} />
    </main>
   );
 }
