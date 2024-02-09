@@ -20,7 +20,7 @@ import songs from "@/app/song-data";
 
 export default function Dashboard({ songId, onPreviousSong, onNextSong, isShuffled, handleSongShuffle }) {
   const [progress, setProgress] = useState(0)
-  const [isRepeated, setIsRepeated] = useState(false);
+  const [isRepeated, setIsRepeated] = useState(JSON.parse(localStorage.getItem('isRepeated')) || false);
   const [isPlaying, setIsPlaying] = useState(false)
   const [cdWidth, setCdWidth] = useState(200)
   const [cdOpacity, setCdOpacity] = useState(1)
@@ -68,6 +68,7 @@ export default function Dashboard({ songId, onPreviousSong, onNextSong, isShuffl
   }
   const handleRepeat = function () {
     setIsRepeated(!isRepeated);
+    localStorage.setItem('isRepeated', JSON.stringify(!isRepeated))
   };
   const handleSongToggle = () => {
     const nextIsPlaying = !isPlaying

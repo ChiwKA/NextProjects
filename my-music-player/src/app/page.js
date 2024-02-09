@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function Home() {
   const [songId, setSongId] = useState(0);
-  const [isShuffled, setIsShuffle] = useState(false)
+  const [isShuffled, setIsShuffled] = useState(JSON.parse(localStorage.getItem("isShuffled")) || false)
   
   const songActiveRef = useRef(null)
   const randomRef = useRef([])
@@ -16,7 +16,7 @@ export default function Home() {
     setTimeout(() => {
       songActiveRef.current.scrollIntoView({
         behavior:'smooth',
-        block:'center',
+        block:'end',
         inline:'center'
       })
     }, 1000)
@@ -63,7 +63,8 @@ export default function Home() {
     }
   }
   const handleSongShuffle = () => {
-    setIsShuffle(!isShuffled)
+    setIsShuffled(!isShuffled)
+    localStorage.setItem("isShuffled", JSON.stringify(!isShuffled))
   }
 
   const selectSong = (id) => {
