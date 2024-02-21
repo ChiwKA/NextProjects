@@ -15,7 +15,7 @@ import {
 import styles from "./Dashboard.module.css";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
-import anime from "animejs";
+import anime from 'animejs/lib/anime.es.js';
 import songs from "@/app/song-data";
 
 export default function Dashboard({ songId, onPreviousSong, onNextSong, isShuffled, handleSongShuffle }) {
